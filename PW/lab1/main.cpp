@@ -8,6 +8,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine, int nCmdShow){
     MSG Msg;
     HWND hwnd;
+    HWND button1, button2;
     WNDCLASSEX wc;
 
     wc.lpszMenuName  = NULL;
@@ -27,11 +28,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         PAINTSTRUCT ps;
 
         switch(msg)    {
+            case WM_CREATE:
+                break;
+
+            case BN_CLICKED:
+
+                break;
+
             case WM_CLOSE:
                 if (MessageBox(NULL, "Are you sure you want to quit?",
                                "Confirmation", MB_ICONQUESTION | MB_YESNO) == IDYES)
                     DestroyWindow(hwnd);
                 break;
+
 
             case WM_DESTROY:
                 PostQuitMessage(0);
@@ -65,6 +74,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
             WS_OVERLAPPEDWINDOW,
             CW_USEDEFAULT, CW_USEDEFAULT, 750, 500,
             NULL, NULL, hInstance, NULL);
+
+    button1 = CreateWindow(
+            "BUTTON",  // Predefined class; Unicode assumed
+            "Open",      // Button text
+            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE,  // Styles
+            20,         // x position
+            20,         // y position
+            78,        // Button width
+            32,        // Button height
+            hwnd,     // Parent window
+            NULL,       // No menu.
+            NULL,
+            NULL);
+    button2 = CreateWindow(
+            "BUTTON",  // Predefined class; Unicode assumed
+            "Create",      // Button text
+            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE,  // Styles
+            20,         // x position
+            60,         // y position
+            78,        // Button width
+            32,        // Button height
+            hwnd,     // Parent window
+            NULL,       // No menu.
+            NULL,
+            NULL);
+
 
     if(hwnd == NULL)    {
         MessageBox(NULL, "Window Creation Failed", "Error",   MB_ICONEXCLAMATION | MB_OK);

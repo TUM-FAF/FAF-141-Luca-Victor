@@ -4,14 +4,14 @@
 - After installing Virtual Box we have to download one of the linux distributors. I've chosen [this](http://www.ubuntu.com/download/server/thank-you?country=MD&version=14.04.4&architecture=amd64) one, because it's more light weighted. 
 
 - Install ubuntu server and run the machine. It's important to change network adapter, set the amount of memory and path to iso file from which to boot the machine. So this is how it looks:
-![Alt](../images/ubuntu-server.png)
+![Alt](images/ubuntu-server.png)
 
 ## Connect via ssh
 - We have to find public ip address of the ubuntu-server machine that was created. Run the following command  ```ifconfig```
 - Lets first of all check if we can see the machine. Ping it using ``` ping -c 4 192.168.1.10``` You should get something like this:
-![ping-machine](/images/ping.png)
+![Alt](/images/ping.png)
 - Now we can easily connect with ssh to our remote server. In linux distributors we type in ```ssh  vitiok-server@192.168.1.10```. If we are using windows we can do the same thing with [Puppy](http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html). Now we can see our shell:
-![Alt](../images/connect-server.png)
+![Alt](images/connect-server.png)
 - Now we can perform any command from our terminal!
 
 ## Run some simple programs
@@ -57,3 +57,55 @@ I'm a JS developer that's why I'll also install node.js:
 
 	 node index.js
 	 ```  
+
+## Set up git
+
+- First of all we have to install git `sudo apt-get install git`
+- Configure global user	name `git config --global user.name "vitiok"`
+- Configure global user	email `git config --global user.email "lucavictor220@gmail.com"`
+- Initialize git repo `git init`
+- Generate ssh key with `ssh-keygen`
+- Set the public key in github
+
+## Add files to remote server
+
+- Clone the repo with `git clone`
+- Move created files in the repo `mv -t directoryPath file1 file2 file3`
+- Check the status `git status`
+- Add changes `git add --all`
+- Commit changes `git commit -m "comments"`
+- Push to remote server `git push origin master`
+- Now we can see our changes on the github.    
+
+## Another way to start with your project
+
+- Initialize local repo `git init`
+- Create file and commit it
+- Create a repo on github and add remote server `git remote add origin http://githuburl..`
+- Pull from remote repo to local `git pull origin master`
+- Now can work further on this project
+
+## Create new branches 
+
+- Add two new branches with `git branch nameOfBranch`
+- Move to new branch with `git checkout nameOfBranch`
+- Now we can commit to a new branch
+- If we want to move back or to another branch use again `git checkout anotherBranchName`
+- This is how it looks in command line:
+![Alt](images/branchSwitch.png)
+![Alt](images/commitToNewBranches.png)
+
+## Tracking, reset and merging
+
+- To set a branch to track a remote server we can do the following `git push -u origin newLayout`
+![Alt](images/setToTrack.png)
+- To reset branch to previous commit use `git checkout c91796325d3e02816b96e72c63ed584e9bbb741f`
+![Alt](images/backToCommit.png)
+- If we need to get rid of all we did until a certain commit `git reset --hard c91796325d3e02816b96e72c63ed584e9bbb741f`
+- Merging of two branches is done with `git merge nameOfBranchToMergeCurrentOne`
+![Alt](images/mergeNoConflicts.png)
+- In some situations auto-merge is not possible this is the case we have to solve conflicts.
+![Alt](images/mergeBranches.png)
+For example we can have something like this in the file:
+![Alt](images/solveConflicts.png)  
+In this case we have to decide which changes are right and then commit them. Git shows the contents of both branches in the file so solving conflicts is really easy in most of the cases.

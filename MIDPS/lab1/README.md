@@ -124,3 +124,11 @@ For example we can have something like this in the file:
 
 ![Alt](images/solveConflicts.png)  
 In this case we have to decide which changes are right and then commit them. Git shows the contents of both branches in the file so solving conflicts is really easy in most of the cases.
+
+##Conclusion
+
+In any project the most important part is to deliver it to the users. A common approach to this problem is simply set up a remote server and to customize the environment on it to run our project. This is the thing we've done at this laboratory work for some simple programs as "helloworld" are. Imagine if we would have a slightly more difficult project. For example a rails project with a lot of stuff which is needed to be set up. In this case setting that environment manually as we've done at this laboratory work would take a lot of time. This is the point where such tools as vagrant or docker comes in handy. They allow you to set your environment in more easy way. It could even be as simple as choosing the right box for your project and everything will be set for us.
+
+VCS is a wonderful tool which allow you to control your project, work with a team of developers and to track all the changes which was ever made. We've set a good background on VCS and Git in particular.
+
+There are still a lot of things to discover on this topic. I'll definitely come back to this topic again!

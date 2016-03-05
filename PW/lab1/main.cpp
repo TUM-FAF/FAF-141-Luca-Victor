@@ -1,117 +1,254 @@
 
 #include <windows.h>
+#include <tchar.h>
 
-HINSTANCE  hInst;
-const char g_szClassName[] = "bonafideideasWindowClass";
+#define COLOR_BUTTON           100
+#define TEXT_COLOR_BUTTON      101
+#define TEXT_BUTTON            102
+#define RECTANGLE_BUTTON       103
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-                   LPSTR lpCmdLine, int nCmdShow){
-    MSG Msg;
-    HWND hwnd;
-    HWND button1, button2;
-    WNDCLASSEX wc;
+const char ClassName[] = "bonafideideasWindowClass";
+UINT Bkcounter = 0;
+UINT Text_bk_color = 0;
+HBRUSH myBrush;
+HBRUSH buttonBrush;
+PMINMAXINFO MinMaxInfo;
+BOOL bText;
+BOOL bRectangle;
 
-    wc.lpszMenuName  = NULL;
-    wc.hInstance     = hInstance;
-    wc.lpszClassName = g_szClassName;
-    wc.cbSize        = sizeof(WNDCLASSEX);
-    wc.cbClsExtra      = wc.cbWndExtra  = 0;
-    wc.style         = CS_HREDRAW | CS_VREDRAW ;
-    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
-    wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
-    wc.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
-    wc.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
-    wc.lpfnWndProc   = [=](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) -> LRESULT {
-        HDC hdc;
-        RECT rect;
-        TEXTMETRIC tm;
-        PAINTSTRUCT ps;
+LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM);
 
-        switch(msg)    {
-            case WM_CREATE:
-                break;
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow){
+    MSG Msg;        // message strucure
+    HWND hwnd;      // handle window
+    WNDCLASSEX wc;  // window structure
 
-            case BN_CLICKED:
+    wc.lpszMenuName  = NULL;                            // window have no menu
+    wc.hInstance     = hInstance;                       // A handle to the instance that contains the window procedure for the class
+    wc.lpszClassName = ClassName;                       // lpszClassName is a string, it specifies the window class name
+    wc.cbSize        = sizeof(WNDCLASSEX);              // The size, in bytes, of this structure. Set this member to sizeof(WNDCLASSEX).
+    wc.cbClsExtra    = 0;                               // Extra bytes to allocate following the window-class structure.
+    wc.style         = CS_HREDRAW | CS_VREDRAW ;        // window style. Can be any combination of the Class Styles
+    wc.hbrBackground = (HBRUSH) CreateSolidBrush(RGB(77, 136, 255));// A handle to the class background brush. Add 1 always.
+    wc.hCursor       = LoadCursor(NULL, IDC_ARROW);     // A handle to the class cursor.
+    wc.hIcon         = LoadIcon(NULL, IDI_APPLICATION); // A handle to the class icon. This member must be a handle to an icon resource.
+    wc.hIconSm       = LoadIcon(NULL, IDI_APPLICATION); // A handle to a small icon that is associated with the window class
+    wc.lpfnWndProc   = WndProc;                         // A pointer to the window procedure. You must use the CallWindowProc.
 
-                break;
-
-            case WM_CLOSE:
-                if (MessageBox(NULL, "Are you sure you want to quit?",
-                               "Confirmation", MB_ICONQUESTION | MB_YESNO) == IDYES)
-                    DestroyWindow(hwnd);
-                break;
-
-
-            case WM_DESTROY:
-                PostQuitMessage(0);
-                break;
-
-            case WM_PAINT:
-                hdc = BeginPaint (hwnd, &ps) ;
-                GetClientRect (hwnd, &rect) ;
-                DrawText (hdc, TEXT ("Done with Pride and Prejudice by Luca Victor"),
-                          -1, &rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER) ;
-                EndPaint (hwnd, &ps) ;
-                return 0 ;
-
-            default:
-                return DefWindowProc(hwnd, msg, wParam, lParam);
-        }
-
-        return 0;
-    };
-
-
-    if(!RegisterClassEx(&wc))    {
+    if(!RegisterClassEx(&wc)) { // handle registration of window class
         MessageBox(NULL, "Window Registration Failed", "Error",   MB_ICONEXCLAMATION | MB_OK);
         return 0;
     }
 
     hwnd = CreateWindowEx(
             WS_EX_CLIENTEDGE,
-            g_szClassName,
-            "Simplest Windows Native App built with CLion",
+            ClassName,
+            "My First Window",
             WS_OVERLAPPEDWINDOW,
             CW_USEDEFAULT, CW_USEDEFAULT, 750, 500,
             NULL, NULL, hInstance, NULL);
-
-    button1 = CreateWindow(
-            "BUTTON",  // Predefined class; Unicode assumed
-            "Open",      // Button text
-            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE,  // Styles
-            20,         // x position
-            20,         // y position
-            78,        // Button width
-            32,        // Button height
-            hwnd,     // Parent window
-            NULL,       // No menu.
-            NULL,
-            NULL);
-    button2 = CreateWindow(
-            "BUTTON",  // Predefined class; Unicode assumed
-            "Create",      // Button text
-            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE,  // Styles
-            20,         // x position
-            60,         // y position
-            78,        // Button width
-            32,        // Button height
-            hwnd,     // Parent window
-            NULL,       // No menu.
-            NULL,
-            NULL);
-
 
     if(hwnd == NULL)    {
         MessageBox(NULL, "Window Creation Failed", "Error",   MB_ICONEXCLAMATION | MB_OK);
         return 0;
     }
 
-    ShowWindow(hwnd, nCmdShow);
-    UpdateWindow(hwnd);
+    ShowWindow(hwnd, nCmdShow); // Sets the specified window's show state
+    UpdateWindow(hwnd); //updates the client area by sending WM_PAINT message
 
-    while(GetMessage(&Msg, NULL, 0, 0) > 0)    {
-        TranslateMessage(&Msg);
-        DispatchMessage(&Msg);
+    while(GetMessage(&Msg, NULL, 0, 0))    {
+        TranslateMessage(&Msg); //passes the msg structure back to Windows for some keyboard translation
+        DispatchMessage(&Msg); // passes the msg structure back to Windows
     }
     return Msg.wParam;
 }
+
+LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { //window procedure is always defined so
+    WPARAM hdc;
+    RECT rect;
+    PAINTSTRUCT ps;
+    COLORREF BkButton = RGB(224, 81, 81);
+    COLORREF BkColors[] = {RGB(117, 163, 209), RGB(255, 212, 82)};
+    COLORREF TextColors[] = {RGB(0, 0, 0), RGB(255, 255, 255)};
+    HWND hbutton1, hbutton2, hbutton3, hbutton4;
+    HDC hDc;
+    HPEN myPen;
+    char text[] = "You clicked me!";
+    HPEN oldPen;
+    LPDRAWITEMSTRUCT pdis = (DRAWITEMSTRUCT*)lParam;
+    SIZE size;
+    char szBtnText1[] = "Text";
+    char szBtnText2[] = "Rectagle";
+
+    switch(iMsg)    {
+        case WM_CREATE:
+            hbutton1 = CreateWindow(
+                    "BUTTON",  // Predefined class; Unicode assumed
+                    "Text Color",      // Button text
+                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE,  // Styles
+                    20,         // x position
+                    20,         // y position
+                    78,        // Button width
+                    32,        // Button height
+                    hwnd,     // Parent window
+                    (HMENU)TEXT_COLOR_BUTTON,
+                    NULL,
+                    NULL);
+
+            hbutton2 = CreateWindow(
+                    "BUTTON",  // Predefined class; Unicode assumed
+                    "Color",      // Button text
+                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE,  // Styles
+                    20,         // x position
+                    60,         // y position
+                    78,        // Button width
+                    32,        // Button height
+                    hwnd,     // Parent window
+                    (HMENU)COLOR_BUTTON,
+                    NULL,
+                    NULL);
+
+            hbutton3 = CreateWindow(
+                    "BUTTON",  // Predefined class; Unicode assumed
+                    "Click ME",      // Button text
+                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE | BS_OWNERDRAW,  // Styles
+                    20,         // x position
+                    100,         // y position
+                    78,        // Button width
+                    32,        // Button height
+                    hwnd,     // Parent window
+                    (HMENU)TEXT_BUTTON,
+                    NULL,
+                    NULL);
+
+            hbutton4 = CreateWindow(
+                    "BUTTON",  // Predefined class; Unicode assumed
+                    "Rectangle",
+                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE | BS_OWNERDRAW, // Styles
+                    20,         // x position
+                    140,         // y position
+                    78,        // Button width
+                    32,        // Button height
+                    hwnd,     // Parent window
+                    (HMENU)RECTANGLE_BUTTON,
+                    NULL,
+                    NULL);
+
+            break;
+
+        case WM_GETMINMAXINFO:
+            MinMaxInfo = (PMINMAXINFO)lParam;
+            MinMaxInfo->ptMinTrackSize.x = 300;
+            MinMaxInfo->ptMinTrackSize.y = 350;
+            MinMaxInfo->ptMaxTrackSize.x = 900;
+            MinMaxInfo->ptMaxTrackSize.y = 600;
+            break;
+
+        case WM_COMMAND:
+            switch(LOWORD(wParam)) {
+                case COLOR_BUTTON:
+                    Bkcounter++;
+                    Bkcounter = Bkcounter % ARRAYSIZE(BkColors);
+                    myBrush = CreateSolidBrush(BkColors[Bkcounter]);
+                    break;
+                case TEXT_COLOR_BUTTON:
+                    Text_bk_color++;
+                    Text_bk_color = Text_bk_color % ARRAYSIZE(TextColors);
+                    break;
+                case TEXT_BUTTON:
+                    bText = !bText;
+                    break;
+                case RECTANGLE_BUTTON:
+                    bRectangle = !bRectangle;
+                    break;
+            }
+
+            hDc = (HDC) GetDC(hwnd);
+            InvalidateRect (hwnd, NULL, TRUE);
+            ReleaseDC(hwnd, hDc);
+            break;
+
+        case WM_CLOSE:
+            if (MessageBox(NULL, "Are you sure you want to quit?",
+                           "Confirmation", MB_ICONQUESTION | MB_YESNO) == IDYES)
+                DestroyWindow(hwnd);
+            break;
+
+        case WM_DRAWITEM:
+            if ((UINT)wParam == TEXT_BUTTON) {
+                GetTextExtentPoint32(pdis->hDC, szBtnText1, (int) strlen(szBtnText1), &size);
+                SetTextColor(pdis->hDC, RGB(51, 51, 51));
+                SetBkColor(pdis->hDC, BkButton);
+
+                ExtTextOut(
+                    pdis->hDC,
+                    ((pdis->rcItem.right - pdis->rcItem.left) - size.cx) / 2,
+                    ((pdis->rcItem.bottom - pdis->rcItem.top) - size.cy) / 2,
+                    ETO_OPAQUE | ETO_CLIPPED,
+                    &pdis->rcItem,
+                    szBtnText1,
+                    strlen(szBtnText1),
+                    NULL);
+
+            } else if((UINT)wParam == RECTANGLE_BUTTON)  {
+                GetTextExtentPoint32(pdis->hDC, szBtnText2, (int) strlen(szBtnText2), &size);
+                SetTextColor(pdis->hDC, RGB(51, 51, 51));
+                SetBkColor(pdis->hDC, BkButton);
+
+                ExtTextOut(
+                        pdis->hDC,
+                        ((pdis->rcItem.right - pdis->rcItem.left) - size.cx) / 2,
+                        ((pdis->rcItem.bottom - pdis->rcItem.top) - size.cy) / 2,
+                        ETO_OPAQUE | ETO_CLIPPED,
+                        &pdis->rcItem,
+                        szBtnText2,
+                        strlen(szBtnText2),
+                        NULL);
+            }
+            DrawEdge(
+                    pdis->hDC,
+                    &pdis->rcItem,
+                    (pdis->itemState & ODS_SELECTED ? EDGE_SUNKEN : EDGE_BUMP ),
+                    BF_RECT);
+            return TRUE;
+            break;
+
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            break;
+
+        case WM_PAINT:
+            myBrush = CreateSolidBrush(BkColors[Bkcounter]);
+            hDc = BeginPaint (hwnd, &ps) ;
+            GetClientRect (hwnd, &rect) ;
+            FillRect(hDc, &rect,  myBrush);
+            SetBkColor(hDc, BkColors[Bkcounter]);
+            SetTextColor(hDc, TextColors[Text_bk_color]);
+            DrawText (hDc, TEXT ("Done with Pride and Prejudice by Victor"),
+                      -1, &rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER) ;
+            if (bRectangle) {
+                COLORREF rectangleColor = RGB(217, 65, 30);
+                myPen = CreatePen(PS_SOLID, 2, rectangleColor);
+                oldPen = (HPEN)SelectObject(hDc, myPen);
+                Rectangle(hDc, 130, 20, 220, 60);
+                rect.left = 131;
+                rect.top = 21;
+                rect.right = 218;
+                rect.bottom = 58;
+                FillRect(hDc, &rect,  myBrush);
+                SelectObject(hDc, oldPen);
+                DeleteObject(myPen);
+            }
+            if (bText) {
+                TextOut(hDc, 140, 70, text, ARRAYSIZE(text));
+            }
+
+            EndPaint (hwnd, &ps);
+            return 0 ;
+
+        default:
+            return DefWindowProc(hwnd, iMsg, wParam, lParam);
+    }
+
+    return 0;
+};

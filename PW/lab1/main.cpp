@@ -6,6 +6,7 @@
 #define TEXT_COLOR_BUTTON      101
 #define TEXT_BUTTON            102
 #define RECTANGLE_BUTTON       103
+#define MOOD_BUTTON            104
 
 const char ClassName[] = "bonafideideasWindowClass";
 UINT Bkcounter = 0;
@@ -13,8 +14,7 @@ UINT Text_bk_color = 0;
 HBRUSH myBrush;
 HBRUSH buttonBrush;
 PMINMAXINFO MinMaxInfo;
-BOOL bText;
-BOOL bRectangle;
+BOOL bRectangle, bgoodMood, bText;
 
 LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM);
 
@@ -67,22 +67,23 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { 
     WPARAM hdc;
     RECT rect;
     PAINTSTRUCT ps;
+    COLORREF faceColor = RGB(224, 81, 81);
     COLORREF BkButton = RGB(224, 81, 81);
     COLORREF BkColors[] = {RGB(117, 163, 209), RGB(255, 212, 82)};
     COLORREF TextColors[] = {RGB(0, 0, 0), RGB(255, 255, 255)};
-    HWND hbutton1, hbutton2, hbutton3, hbutton4;
     HDC hDc;
-    HPEN myPen;
+    HPEN myPen, oldPen, hFace;
     char text[] = "You clicked me!";
-    HPEN oldPen;
+    char new_text[] = "Never too late!";
     LPDRAWITEMSTRUCT pdis = (DRAWITEMSTRUCT*)lParam;
     SIZE size;
     char szBtnText1[] = "Text";
     char szBtnText2[] = "Rectagle";
+    HFONT fontOutputText;
 
     switch(iMsg)    {
         case WM_CREATE:
-            hbutton1 = CreateWindow(
+            CreateWindow(
                     "BUTTON",  // Predefined class; Unicode assumed
                     "Text Color",      // Button text
                     WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE,  // Styles
@@ -95,7 +96,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { 
                     NULL,
                     NULL);
 
-            hbutton2 = CreateWindow(
+            CreateWindow(
                     "BUTTON",  // Predefined class; Unicode assumed
                     "Color",      // Button text
                     WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE,  // Styles
@@ -108,7 +109,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { 
                     NULL,
                     NULL);
 
-            hbutton3 = CreateWindow(
+            CreateWindow(
                     "BUTTON",  // Predefined class; Unicode assumed
                     "Click ME",      // Button text
                     WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE | BS_OWNERDRAW,  // Styles
@@ -121,7 +122,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { 
                     NULL,
                     NULL);
 
-            hbutton4 = CreateWindow(
+            CreateWindow(
                     "BUTTON",  // Predefined class; Unicode assumed
                     "Rectangle",
                     WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE | BS_OWNERDRAW, // Styles
@@ -131,6 +132,19 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { 
                     32,        // Button height
                     hwnd,     // Parent window
                     (HMENU)RECTANGLE_BUTTON,
+                    NULL,
+                    NULL);
+
+            CreateWindow(
+                    "BUTTON",  // Predefined class; Unicode assumed
+                    "Mood",      // Button text
+                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE,  // Styles
+                    110,         // x position
+                    20,         // y position
+                    78,        // Button width
+                    32,        // Button height
+                    hwnd,     // Parent window
+                    (HMENU)MOOD_BUTTON,
                     NULL,
                     NULL);
 
@@ -160,6 +174,9 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { 
                     break;
                 case RECTANGLE_BUTTON:
                     bRectangle = !bRectangle;
+                    break;
+                case MOOD_BUTTON:
+                    bgoodMood = !bgoodMood;
                     break;
             }
 
@@ -242,7 +259,22 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { 
             if (bText) {
                 TextOut(hDc, 140, 70, text, ARRAYSIZE(text));
             }
-
+            fontOutputText = CreateFont(20,0,0,0,0,0,0,0,0,0,0,0,0,TEXT("Tahoma"));
+            SelectObject(hDc, fontOutputText);
+            TextOut(hDc, 140, 140, new_text, ARRAYSIZE(new_text));
+            // draw face
+            hFace = CreatePen(PS_SOLID, 3, faceColor);
+            oldPen = (HPEN) SelectObject(hDc, hFace);
+            Arc(hDc, 50, 200, 150, 300, 0, 0, 0, 0);
+            Arc(hDc, 80, 230, 90, 240, 0, 0, 0, 0);
+            Arc(hDc, 110, 230, 120, 240, 0, 0, 0, 0);
+            if(bgoodMood) {
+                Arc(hDc, 65, 215, 135, 285, 65, 260, 135, 260);
+            } else {
+                Arc(hDc, 65, 260, 135, 330, 135, 270, 65, 270);
+            };
+            SelectObject(hDc, oldPen);
+            DeleteObject(hFace);
             EndPaint (hwnd, &ps);
             return 0 ;
 

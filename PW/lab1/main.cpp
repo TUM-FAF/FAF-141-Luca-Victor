@@ -1,6 +1,4 @@
-
 #include <windows.h>
-#include <tchar.h>
 
 #define COLOR_BUTTON           100
 #define TEXT_COLOR_BUTTON      101
@@ -8,14 +6,16 @@
 #define RECTANGLE_BUTTON       103
 #define MOOD_BUTTON            104
 
-const char ClassName[] = "bonafideideasWindowClass";
+const char ClassName[] = "MyClass";
 UINT Bkcounter = 0;
 UINT Text_bk_color = 0;
 HBRUSH myBrush;
-HBRUSH buttonBrush;
 PMINMAXINFO MinMaxInfo;
+UINT button_width = 78;
+UINT button_height = 32;
 BOOL bRectangle, bgoodMood, bText;
 
+void createButtons(HWND, UINT, UINT);
 LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow){
@@ -64,15 +64,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 }
 
 LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { //window procedure is always defined so
-    WPARAM hdc;
+    HDC hDc;
     RECT rect;
     PAINTSTRUCT ps;
     COLORREF faceColor = RGB(224, 81, 81);
     COLORREF BkButton = RGB(224, 81, 81);
     COLORREF BkColors[] = {RGB(117, 163, 209), RGB(255, 212, 82)};
     COLORREF TextColors[] = {RGB(0, 0, 0), RGB(255, 255, 255)};
-    HDC hDc;
-    HPEN myPen, oldPen, hFace;
+    HPEN myPen, hOldPen, hFacePen;
     char text[] = "You clicked me!";
     char new_text[] = "Never too late!";
     LPDRAWITEMSTRUCT pdis = (DRAWITEMSTRUCT*)lParam;
@@ -83,71 +82,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { 
 
     switch(iMsg)    {
         case WM_CREATE:
-            CreateWindow(
-                    "BUTTON",  // Predefined class; Unicode assumed
-                    "Text Color",      // Button text
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE,  // Styles
-                    20,         // x position
-                    20,         // y position
-                    78,        // Button width
-                    32,        // Button height
-                    hwnd,     // Parent window
-                    (HMENU)TEXT_COLOR_BUTTON,
-                    NULL,
-                    NULL);
-
-            CreateWindow(
-                    "BUTTON",  // Predefined class; Unicode assumed
-                    "Color",      // Button text
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE,  // Styles
-                    20,         // x position
-                    60,         // y position
-                    78,        // Button width
-                    32,        // Button height
-                    hwnd,     // Parent window
-                    (HMENU)COLOR_BUTTON,
-                    NULL,
-                    NULL);
-
-            CreateWindow(
-                    "BUTTON",  // Predefined class; Unicode assumed
-                    "Click ME",      // Button text
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE | BS_OWNERDRAW,  // Styles
-                    20,         // x position
-                    100,         // y position
-                    78,        // Button width
-                    32,        // Button height
-                    hwnd,     // Parent window
-                    (HMENU)TEXT_BUTTON,
-                    NULL,
-                    NULL);
-
-            CreateWindow(
-                    "BUTTON",  // Predefined class; Unicode assumed
-                    "Rectangle",
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE | BS_OWNERDRAW, // Styles
-                    20,         // x position
-                    140,         // y position
-                    78,        // Button width
-                    32,        // Button height
-                    hwnd,     // Parent window
-                    (HMENU)RECTANGLE_BUTTON,
-                    NULL,
-                    NULL);
-
-            CreateWindow(
-                    "BUTTON",  // Predefined class; Unicode assumed
-                    "Mood",      // Button text
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE,  // Styles
-                    110,         // x position
-                    20,         // y position
-                    78,        // Button width
-                    32,        // Button height
-                    hwnd,     // Parent window
-                    (HMENU)MOOD_BUTTON,
-                    NULL,
-                    NULL);
-
+            createButtons(hwnd, button_width, button_height);
             break;
 
         case WM_GETMINMAXINFO:
@@ -246,14 +181,14 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { 
             if (bRectangle) {
                 COLORREF rectangleColor = RGB(217, 65, 30);
                 myPen = CreatePen(PS_SOLID, 2, rectangleColor);
-                oldPen = (HPEN)SelectObject(hDc, myPen);
-                Rectangle(hDc, 130, 20, 220, 60);
+                hOldPen = (HPEN)SelectObject(hDc, myPen);
+                Rectangle(hDc, 130, 60, 255, 100);
                 rect.left = 131;
-                rect.top = 21;
-                rect.right = 218;
-                rect.bottom = 58;
+                rect.top = 61;
+                rect.right = 253;
+                rect.bottom = 98;
                 FillRect(hDc, &rect,  myBrush);
-                SelectObject(hDc, oldPen);
+                SelectObject(hDc, hOldPen);
                 DeleteObject(myPen);
             }
             if (bText) {
@@ -263,8 +198,8 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { 
             SelectObject(hDc, fontOutputText);
             TextOut(hDc, 140, 140, new_text, ARRAYSIZE(new_text));
             // draw face
-            hFace = CreatePen(PS_SOLID, 3, faceColor);
-            oldPen = (HPEN) SelectObject(hDc, hFace);
+            hFacePen = CreatePen(PS_SOLID, 3, faceColor);
+            hOldPen = (HPEN) SelectObject(hDc, hFacePen);
             Arc(hDc, 50, 200, 150, 300, 0, 0, 0, 0);
             Arc(hDc, 80, 230, 90, 240, 0, 0, 0, 0);
             Arc(hDc, 110, 230, 120, 240, 0, 0, 0, 0);
@@ -273,8 +208,8 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { 
             } else {
                 Arc(hDc, 65, 260, 135, 330, 135, 270, 65, 270);
             };
-            SelectObject(hDc, oldPen);
-            DeleteObject(hFace);
+            SelectObject(hDc, hOldPen);
+            DeleteObject(hFacePen);
             EndPaint (hwnd, &ps);
             return 0 ;
 
@@ -284,3 +219,71 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { 
 
     return 0;
 };
+
+void createButtons(HWND hwnd, UINT width, UINT height) {
+    CreateWindow(
+            "BUTTON",  // Predefined class; Unicode assumed
+            "Text Color",      // Button text
+            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE,  // Styles
+            20,         // x position
+            20,         // y position
+            width,        // Button width
+            height,        // Button height
+            hwnd,     // Parent window
+            (HMENU)TEXT_COLOR_BUTTON,
+            NULL,
+            NULL);
+
+    CreateWindow(
+            "BUTTON",  // Predefined class; Unicode assumed
+            "Color",      // Button text
+            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE,  // Styles
+            20,         // x position
+            60,         // y position
+            width,        // Button width
+            height,        // Button height
+            hwnd,     // Parent window
+            (HMENU)COLOR_BUTTON,
+            NULL,
+            NULL);
+
+    CreateWindow(
+            "BUTTON",  // Predefined class; Unicode assumed
+            "Click ME",      // Button text
+            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE | BS_OWNERDRAW,  // Styles
+            20,         // x position
+            100,         // y position
+            width,        // Button width
+            height,        // Button height
+            hwnd,     // Parent window
+            (HMENU)TEXT_BUTTON,
+            NULL,
+            NULL);
+
+    CreateWindow(
+            "BUTTON",  // Predefined class; Unicode assumed
+            "Rectangle",
+            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE | BS_OWNERDRAW, // Styles
+            20,         // x position
+            140,         // y position
+            width,        // Button width
+            height,        // Button height
+            hwnd,     // Parent window
+            (HMENU)RECTANGLE_BUTTON,
+            NULL,
+            NULL);
+
+    CreateWindow(
+            "BUTTON",  // Predefined class; Unicode assumed
+            "Mood",      // Button text
+            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHLIKE,  // Styles
+            110,         // x position
+            20,         // y position
+            width,        // Button width
+            height,        // Button height
+            hwnd,     // Parent window
+            (HMENU)MOOD_BUTTON,
+            NULL,
+            NULL);
+
+}

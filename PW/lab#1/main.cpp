@@ -16,6 +16,7 @@ UINT button_height = 32;
 BOOL bRectangle, bgoodMood, bText;
 
 void createButtons(HWND, UINT, UINT);
+void drawFace(HDC, HPEN, HPEN, COLORREF);
 LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow){
@@ -66,16 +67,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { //window procedure is always defined so
     HDC hDc;
     RECT rect;
+    SIZE size;
     PAINTSTRUCT ps;
-    COLORREF faceColor = RGB(224, 81, 81);
+    COLORREF face_color = RGB(224, 81, 81);
     COLORREF BkButton = RGB(224, 81, 81);
     COLORREF BkColors[] = {RGB(117, 163, 209), RGB(255, 212, 82)};
     COLORREF TextColors[] = {RGB(0, 0, 0), RGB(255, 255, 255)};
     HPEN myPen, hOldPen, hFacePen;
+    LPDRAWITEMSTRUCT pdis = (DRAWITEMSTRUCT*)lParam;
     char text[] = "You clicked me!";
     char new_text[] = "Never too late!";
-    LPDRAWITEMSTRUCT pdis = (DRAWITEMSTRUCT*)lParam;
-    SIZE size;
     char szBtnText1[] = "Text";
     char szBtnText2[] = "Rectagle";
     HFONT fontOutputText;
@@ -197,19 +198,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam) { 
             fontOutputText = CreateFont(20,0,0,0,0,0,0,0,0,0,0,0,0,TEXT("Tahoma"));
             SelectObject(hDc, fontOutputText);
             TextOut(hDc, 140, 140, new_text, ARRAYSIZE(new_text));
-            // draw face
-            hFacePen = CreatePen(PS_SOLID, 3, faceColor);
-            hOldPen = (HPEN) SelectObject(hDc, hFacePen);
-            Arc(hDc, 50, 200, 150, 300, 0, 0, 0, 0);
-            Arc(hDc, 80, 230, 90, 240, 0, 0, 0, 0);
-            Arc(hDc, 110, 230, 120, 240, 0, 0, 0, 0);
-            if(bgoodMood) {
-                Arc(hDc, 65, 215, 135, 285, 65, 260, 135, 260);
-            } else {
-                Arc(hDc, 65, 260, 135, 330, 135, 270, 65, 270);
-            };
-            SelectObject(hDc, hOldPen);
-            DeleteObject(hFacePen);
+            drawFace(hDc, hFacePen, hOldPen, face_color);
             EndPaint (hwnd, &ps);
             return 0 ;
 
@@ -286,4 +275,19 @@ void createButtons(HWND hwnd, UINT width, UINT height) {
             NULL,
             NULL);
 
+}
+
+void drawFace(HDC hdc, HPEN hFacePen,HPEN hOldPen, COLORREF face_color) {
+    hFacePen = CreatePen(PS_SOLID, 3, face_color);
+    hOldPen = (HPEN) SelectObject(hdc, hFacePen);
+    Arc(hdc, 50, 200, 150, 300, 0, 0, 0, 0);
+    Arc(hdc, 80, 230, 90, 240, 0, 0, 0, 0);
+    Arc(hdc, 110, 230, 120, 240, 0, 0, 0, 0);
+    if(bgoodMood) {
+        Arc(hdc, 65, 215, 135, 285, 65, 260, 135, 260);
+    } else {
+        Arc(hdc, 65, 260, 135, 330, 135, 270, 65, 270);
+    };
+    SelectObject(hdc, hOldPen);
+    DeleteObject(hFacePen);
 }

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
-project(lab1)
+project(lab2)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mwindows -std=c++11")
 
-set(SOURCE_FILES main.cpp)
-add_executable(lab1 ${SOURCE_FILES})
+set(SOURCE_FILES main.cpp resource.h resouce.rc)
+add_executable(lab2 ${SOURCE_FILES})

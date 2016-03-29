@@ -1,9 +1,11 @@
 #include <windows.h>
 #include "resource.h"
 
-HWND hListBox, hAddButton;
+
+HWND hListBox, hAddButton, hRemoveButton, hClearButton;
 HMENU hmenu;
 HWND hnewItem;
+HMENU hPopupMenu;
 
 
 LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM) ;
@@ -58,7 +60,9 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     RECT rect ;
     UINT iTextLength;
     char* szText;
-
+    POINT pt;
+    int index;
+    HINSTANCE hInstance;
 
     switch (message) {
         case WM_CREATE:
@@ -72,18 +76,35 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             switch (LOWORD(wParam)){
                 case ID_ADD_BUTTON:
                     iTextLength = SendMessage(hnewItem, WM_GETTEXTLENGTH, 0, 0);
-                    szText = (char*)malloc(iTextLength+1);
-                    SendMessage(hnewItem, WM_GETTEXT, iTextLength+1, (LPARAM)szText);
-                    SendMessage(hListBox, LB_ADDSTRING, 0, (LPARAM)szText);
-                    SendMessage(hnewItem, WM_SETTEXT, 0, (LPARAM)"");
-                    free(szText);
+                    if (iTextLength != 0) {
+                        szText = (char*)malloc(iTextLength+1);
+                        SendMessage(hnewItem, WM_GETTEXT, iTextLength+1, (LPARAM)szText);
+                        SendMessage(hListBox, LB_ADDSTRING, 0, (LPARAM)szText);
+                        SendMessage(hnewItem, WM_SETTEXT, 0, (LPARAM)"");
+                        free(szText);
+                    }
+                    break;
+                case ID_REMOVE_BUTTON:
+                    index = SendMessage(hListBox, LB_GETCURSEL, 0, 0);
+                    if (index != LB_ERR)
+                        SendMessage(hListBox, LB_DELETESTRING, index, 0);
+                    break;
+
+                case ID_CLEAR_BUTTON:
+                    SendMessage(hListBox, LB_RESETCONTENT, 0, 0);
                     break;
             }
-            break;
         case WM_PAINT:
             hdc = BeginPaint (hwnd, &ps) ;
             EndPaint (hwnd, &ps) ;
             return 0 ;
+        case WM_SETCURSOR:
+            hInstance = GetModuleHandle(NULL);
+            if (LOWORD(lParam) == HTCLIENT) {
+                SetCursor(LoadCursor(hInstance, MAKEINTRESOURCE(IDC_TARGET)));
+                return TRUE;
+            }
+            break;
         case WM_DESTROY:
             PostQuitMessage (0) ;
             return 0 ;
@@ -95,7 +116,7 @@ void createWindows(HWND hwnd) {
     HINSTANCE hInstance = GetModuleHandle(NULL);
     hListBox = CreateWindowExW(WS_EX_CLIENTEDGE
             , L"LISTBOX", NULL
-            , WS_CHILD | WS_VISIBLE
+            , WS_CHILD | WS_VISIBLE | LBS_NOTIFY
             , 7, 35, 200, 300
             , hwnd, NULL, hInstance, NULL);
 
@@ -103,7 +124,7 @@ void createWindows(HWND hwnd) {
             TEXT("Edit"),
             TEXT(""),
             WS_CHILD | WS_VISIBLE | WS_BORDER,
-            5, 5, 100, 20, hwnd,
+            5, 5, 200, 20, hwnd,
             (HMENU)ID_NEW_ITEM,
             GetModuleHandle(NULL),
             NULL);
@@ -112,8 +133,26 @@ void createWindows(HWND hwnd) {
             TEXT("Button"),
             TEXT("Add"),
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            110, 5, 50, 20, hwnd,
+            210, 5, 78, 20, hwnd,
             (HMENU)ID_ADD_BUTTON,
+            GetModuleHandle(NULL),
+            NULL);
+
+    hRemoveButton = CreateWindow(
+            TEXT("Button"),
+            TEXT("Remove"),
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            210, 35, 78, 20, hwnd,
+            (HMENU)ID_REMOVE_BUTTON,
+            GetModuleHandle(NULL),
+            NULL);
+
+    hClearButton = CreateWindow(
+            TEXT("Button"),
+            TEXT("Clear"),
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            210, 65, 78, 20, hwnd,
+            (HMENU)ID_CLEAR_BUTTON,
             GetModuleHandle(NULL),
             NULL);
 }

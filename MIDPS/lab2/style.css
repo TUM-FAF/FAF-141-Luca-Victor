@@ -1,0 +1,33 @@
+body {
+  padding: 0px;
+  margin: 0px;
+}
+
+.container {
+  width: 350px;
+  height: 300px;
+  border: 2px solid grey;
+}
+
+.raw {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+}
+
+.item {
+  width: 40px;
+  height: 40px;
+  margin: 7px;
+}
+
+.item-23 {
+  width: 98px;
+}
+
+.input {
+  text-align: right;
+  margin: 7px;
+  width: 320px;
+  height: 50px;
+}

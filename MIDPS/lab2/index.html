@@ -2,8 +2,49 @@
 <html>
 <head>
   <title>Calculator</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="app.js" type="text/javascript"></script>
 </head>
 <body>
-  Hi
+  <div class="container">
+    <div class="raw">
+    <input class="input"></input>
+    </div>
+    <div class="raw">
+      <button class="item item-1 number" value="7">7</button>
+      <button class="item item-2 number" value="8">8</button>
+      <button class="item item-3 number" value="9">9</button>
+      <button class="item item-4 operation" value="/">/</button>
+      <button class="item item-5 undo"><-</button>
+      <button class="item item-6 clear">C</button>
+    </div>
+      
+    <div class="raw">
+      <button class="item item-7 number" value="4">4</button>
+      <button class="item item-8 number" value="5">5</button>
+      <button class="item item-9 number" value="6">6</button>
+      <button class="item item-10 operation" value="*">x</button>
+      <button class="item item-11" value="7">(</button>
+      <button class="item item-12" value="7">)</button>
+    </div>
+
+    <div class="raw">
+      <button class="item item-13 number" value="1">1</button>
+      <button class="item item-14 number" value="2">2</button>
+      <button class="item item-15 number" value="3">3</button>
+      <button class="item item-16 operation" value="-">-</button>
+      <button class="item item-17 operation" value="^">^</button>
+      <button class="item item-18 operation" value="sqrt">sqrt</button>
+    </div>
+    <div class="raw">
+      <button class="item item-19 number" value="0">0</button>
+      <button class="item item-20 ">.</button>
+      <button class="item item-21 operation" value="%">%</button>
+      <button class="item item-22 operation" value="+">+</button>
+      <button class="item item-23 equal">=</button>
+      <!-- <div class="item item-20"></div> -->
+    </div>
+  </div>
 </body>
 </html>

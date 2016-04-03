@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var _ = require('underscore');
-var operations = ["-", "+", "/", "*"];
-var core = require('./core');
+var operations = ["-", "+", "/", "*", "^"];
+var core = require('./core/index.js');
 
 
 $(function() {
@@ -15,6 +15,13 @@ $(function() {
       return;
     }
     if (!check.operation(value))
+      input.val(input.val() + this.value);
+  });
+  $('.bracket').click(function() {
+    input.val(input.val() + this.value);
+  });
+  $('.dot').click(function() {
+    if (check.priviousCharacter(input.val())) 
       input.val(input.val() + this.value);
   });
   $('.clear').click(function() {
@@ -31,13 +38,20 @@ $(function() {
 }); 
 
 var check = {
+  "number": /\d/,
+  "oper": /[-/^*+]{1,2}/,
   operation: function(expression) {
-    if (_.contains(operations, expression[expression.length-1]))
+    if (this.oper.test(expression.slice(-1)))
       return true
     return false
   },
   firstCharacter: function(expression) {
     if (expression == "")
+      return true;
+    return false;
+  },
+  priviousCharacter: function(expression) {
+    if (this.number.test(expression.slice(-1))) 
       return true;
     return false;
   }

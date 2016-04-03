@@ -1,18 +1,6 @@
 var _ = require('underscore');
 
-module.exports = {
-  calculate: function(exp) {
-    return "blaaaa";
-  }
-};
-
-// implimented Shunting Yard Algorithm to get RPN
-var string  = "9+24/(7-3)"; // -65
-var string1 = "32.1+2.32^2*(21-3-2)^2+21";
-var string2 = "2+ 2*(3.3 +  5/(2+1))*2+4"
-var _ = require('./underscore-min.js');
-
-var RPN = (function(data) {
+var parse = function(data) {
   var StackOperators = [];
   var OutputQueue = [];
   var TokenArray = [];
@@ -65,7 +53,6 @@ var RPN = (function(data) {
     return OutputQueue;
   }
   return ShuntingYardAlgorithm(data);
-})(string);
+}
 
-
-console.log(RPN);
+module.exports = parse;

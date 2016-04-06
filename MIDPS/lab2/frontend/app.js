@@ -1,20 +1,18 @@
+const ipcRenderer = require('electron').ipcRenderer;
 var $ = require('jquery');
-var _ = require('underscore');
-var operations = ["-", "+", "/", "*", "^"];
-var core = require('./core/index.js');
-
 
 $(function() {
   var input = $('.input');
+  input.focus();
+  input.focusout(function() {
+    input.focus();
+  });
   $('.number').click(function() {
     input.val(input.val() + this.value);
   });
   $('.operation').click(function() {
     var value = input.val().toString();
-    if (check.firstCharacter(value)) {
-      return;
-    }
-    if (!check.operation(value))
+    if (!check.operation(value) || this.value == "\u221A")    //for sqrt
       input.val(input.val() + this.value);
   });
   $('.bracket').click(function() {
@@ -29,30 +27,46 @@ $(function() {
   });
   $('.undo').click(function() {
     var value = input.val().toString();
-    value = value.slice(0, -1);
-    input.val(value);
+    input.val(value.slice(0, -1));
   });
   $('.equal').click(function() {
-    input.val(core.calculate(input.val().toString()));
+    if (check.brackets(input.val())){
+      var expression = input.val().toString();
+      ipcRenderer.send('asynchronous-message', expression);
+      ipcRenderer.on('asynchronous-reply', function(event, result) {
+        input.val(result);
+      });
+    } else {
+      input.val("error");
+    }
   });
 }); 
 
 var check = {
   "number": /\d/,
-  "oper": /[-/^*+]{1,2}/,
+  "oper": /\bsqrt\b|[-/^*+]{1,2}/,
   operation: function(expression) {
     if (this.oper.test(expression.slice(-1)))
       return true
     return false
   },
-  firstCharacter: function(expression) {
-    if (expression == "")
-      return true;
-    return false;
-  },
   priviousCharacter: function(expression) {
     if (this.number.test(expression.slice(-1))) 
       return true;
     return false;
+  },
+  brackets: function(expression) {
+    var nr = 0;
+    for (var i = 0; i < expression.length; i++) {
+      if (expression[i] == "(")
+        nr++
+      if (expression[i] == ")")
+        nr-- 
+    }
+    if (nr >= 0) 
+      return true;
+    return false;
   }
 }
+
+

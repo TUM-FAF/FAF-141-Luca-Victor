@@ -5,28 +5,32 @@ var parse = function(data) {
   var OutputQueue = [];
   var TokenArray = [];
   var number = /^[+-]?\d+(\.\d+)?$/;
-  var operator = /[-/^*+]{1}/;
+  var operator = /\bsqrt\b|[-/^*+]{1}/;
   var precedence = {
     "+": 0, 
     "-": 0, 
     "*": 1, 
     "/": 1,
-    "^": 2
+    "^": 2,
+    "sqrt": 2
   };
 
   function splitString(string) {
-    string = string.replace(/\+/g, ",+,")
+    string = string
       .replace(/\-/g, ",-,")
+      .replace(/\+/g, ",+,")
       .replace(/\*/g, ",*,")
       .replace(/\//g, ",/,")
       .replace(/\^/g, ",^,")
       .replace(/\(/g, "(,")
       .replace(/\)/g, ",)")
+      .replace(/\u221A/g, ",sqrt,")
       .split(',');
     return string;
   }
   function ShuntingYardAlgorithm(data) {
     data = splitString(data);
+    data = _.compact(data);
     while (data.length != 0) {
       var current_token = data.shift();
       if (number.test(current_token))   // if it's a number push to OutputQueue

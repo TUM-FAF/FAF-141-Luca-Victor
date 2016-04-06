@@ -4,7 +4,7 @@ var _ = require('underscore');
 var calculate = function(data) {
   var Stack = data;
   var number = /^[+-]?\d+(\.\d+)?$/;
-  var operator = /[-/^*+]{1}/;
+  var operator = /\bsqrt\b|[-/^*+]{1}/;
   var operand_1, operand_2;
   var top_stack;
   var math_it = {
@@ -21,9 +21,13 @@ var calculate = function(data) {
       Stack.push(current_token);
     }
     if (operator.test(current_token)) {
-      operand_1 = Stack.pop();
-      operand_2 = Stack.pop();
-      Stack.push(math_it[current_token](Number(operand_2), Number(operand_1)));
+      if (current_token == "sqrt") {
+        Stack.push(math_it[current_token](Number(Stack.pop())));
+      } else {
+        operand_1 = Stack.pop();
+        operand_2 = Stack.pop();
+        Stack.push(math_it[current_token](Number(operand_2), Number(operand_1)));
+      }
     }
   }
   return _.first(Stack);

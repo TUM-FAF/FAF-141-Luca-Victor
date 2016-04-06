@@ -3,10 +3,22 @@ var $ = require('jquery');
 
 $(function() {
   var input = $('.input');
+  function computeResult() {
+    if (check.brackets(input.val())) {
+      var expression = input.val().toString();
+      ipcRenderer.send('asynchronous-message', expression);
+      ipcRenderer.on('asynchronous-reply', function(event, result) {
+        input.val(result);
+      });
+    } else {
+      input.val("error");
+    }
+  }
   input.focus();
   input.focusout(function() {
     input.focus();
   });
+  // attach events to buttons
   $('.number').click(function() {
     input.val(input.val() + this.value);
   });
@@ -29,15 +41,11 @@ $(function() {
     var value = input.val().toString();
     input.val(value.slice(0, -1));
   });
-  $('.equal').click(function() {
-    if (check.brackets(input.val())){
-      var expression = input.val().toString();
-      ipcRenderer.send('asynchronous-message', expression);
-      ipcRenderer.on('asynchronous-reply', function(event, result) {
-        input.val(result);
-      });
-    } else {
-      input.val("error");
+  $('.equal').click(computeResult);
+  $(document).keypress(function(event) {
+    var enter_key = (event.which == 13 ? 1 : 0);
+    if (enter_key) {
+      $('.equal').click();
     }
   });
 }); 

@@ -13,9 +13,12 @@ I decided to make my calculator in [electron](http://electron.atom.io/). Electro
 
 ## How it works
 So here it is...
-![Alt](images/img1.png)
+
+![Alt](readmeImages/img1.png)
+
 Enter values and press enter...
-![Alt](images/img2.png)
+
+![Alt](readmeImages/img2.png)
 
 
 ## Conclusion

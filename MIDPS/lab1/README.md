@@ -10,7 +10,7 @@
 ## Connect via ssh
 - We have to find public ip address of the ubuntu-server machine that was created. Run the following command  ```ifconfig```
 - Lets first of all check if we can see the machine. Ping it using ``` ping -c 4 192.168.1.10``` You should get something like this:
-ascasc
+
 ![Alt](images/ping.png)
 
 - Now we can easily connect with ssh to our remote server. In linux distributors we type in ```ssh  vitiok-server@192.168.1.10```. If we are using windows we can do the same thing with [Puppy](http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html). Now we can see our shell:

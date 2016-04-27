@@ -103,16 +103,12 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         case WM_HSCROLL:
             iCurrentIdBar = GetWindowLong ((HWND) lParam, GWL_ID) ;
             switch (LOWORD (wParam)) {
-                case SB_PAGEDOWN :
-                    color[iCurrentIdBar] += 15 ;
-                    break ;
-                case SB_TOP :
-                    color[iCurrentIdBar] = 0 ;
-                    break ;
-                case SB_BOTTOM :
-                    color[iCurrentIdBar] = 255 ;
-                    break ;
-                case SB_THUMBPOSITION :
+                case SB_LINEUP:
+                    color[iCurrentIdBar] -= 5;
+                    break;
+                case SB_LINEDOWN:
+                    color[iCurrentIdBar] += 5;
+                    break;
                 case SB_THUMBTRACK :
                     color[iCurrentIdBar] = HIWORD (wParam) ;
                     break ;
@@ -131,9 +127,23 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             iLength = wsprintf (szBuffer, TEXT ("%i"), color[iCurrentIdBar]) ;
             TextOut (hdc, 300, 200, szBuffer, iLength) ;
             SetWindowText (hValue[iCurrentIdBar], szBuffer) ;
+//            DeleteObject ((HBRUSH) SetClassLong (hwnd, GCL_HBRBACKGROUND, (LONG)
+//                    CreateSolidBrush (RGB (color[0], color[1], color[2])))) ;
             InvalidateRect (hwnd, &rect, TRUE) ;
             ReleaseDC(hwnd, hdc);
             break;
+        case WM_KEYDOWN:
+            iCurrentIdBar = GetWindowLong ((HWND) lParam, GWL_ID) ;
+            switch(wParam) {
+                case VK_UP :
+                    SendMessage(hScrollBars[iCurrentIdBar], WM_HSCROLL, SB_LINEUP, 0);
+                break;
+                case VK_DOWN :
+                    SendMessage(hScrollBars[iCurrentIdBar], WM_HSCROLL, SB_LINEDOWN, 0);
+                break;
+            }
+            return 0;
+
         case WM_PAINT:
             hdc = BeginPaint (hwnd, &ps) ;
             EndPaint (hwnd, &ps) ;

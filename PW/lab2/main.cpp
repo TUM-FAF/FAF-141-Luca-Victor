@@ -6,6 +6,9 @@ HWND hListBox, hAddButton, hRemoveButton, hClearButton;
 HMENU hmenu;
 HWND hnewItem;
 HMENU hPopupMenu;
+static HWND hScrollBars[3], hLabel[3], hValue[3];
+static COLORREF crPrim[3] = { RGB (255, 0, 0), RGB (0, 255, 0), RGB (0, 0, 255) } ;
+static HBRUSH hBrush[3], hBrushStatic ;
 
 
 LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM) ;
@@ -61,8 +64,12 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     UINT iTextLength;
     char* szText;
     POINT pt;
-    int index;
+    int index, iCurrentIdBar;
     HINSTANCE hInstance;
+    TCHAR szBuffer[10];
+    static int color[3];
+    SCROLLINFO si ;
+
 
     switch (message) {
         case WM_CREATE:
@@ -89,11 +96,44 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                     if (index != LB_ERR)
                         SendMessage(hListBox, LB_DELETESTRING, index, 0);
                     break;
-
                 case ID_CLEAR_BUTTON:
                     SendMessage(hListBox, LB_RESETCONTENT, 0, 0);
                     break;
             }
+        case WM_HSCROLL:
+            iCurrentIdBar = GetWindowLong ((HWND) lParam, GWL_ID) ;
+            switch (LOWORD (wParam)) {
+                case SB_PAGEDOWN :
+                    color[iCurrentIdBar] += 15 ;
+                    break ;
+                case SB_TOP :
+                    color[iCurrentIdBar] = 0 ;
+                    break ;
+                case SB_BOTTOM :
+                    color[iCurrentIdBar] = 255 ;
+                    break ;
+                case SB_THUMBPOSITION :
+                case SB_THUMBTRACK :
+                    color[iCurrentIdBar] = HIWORD (wParam) ;
+                    break ;
+                default :
+                    break ;
+            }
+            SetScrollPos (hScrollBars[iCurrentIdBar], SB_CTL, color[iCurrentIdBar], TRUE) ;
+//            si.cbSize = sizeof (SCROLLINFO) ;
+//            si.nMin = 0;
+//            si.nMax = 255;
+//            SetScrollRange (hwnd, SB_HORZ, si.nMin, si.nMax, false) ;
+//            SetScrollPos (hwnd, SB_HORZ, wParam, true) ;
+            int iLength ;
+            TCHAR szBuffer [40] ;
+            hdc = GetDC(hwnd);
+            iLength = wsprintf (szBuffer, TEXT ("%i"), color[iCurrentIdBar]) ;
+            TextOut (hdc, 300, 200, szBuffer, iLength) ;
+            SetWindowText (hValue[iCurrentIdBar], szBuffer) ;
+            InvalidateRect (hwnd, &rect, TRUE) ;
+            ReleaseDC(hwnd, hdc);
+            break;
         case WM_PAINT:
             hdc = BeginPaint (hwnd, &ps) ;
             EndPaint (hwnd, &ps) ;
@@ -113,11 +153,12 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 void createWindows(HWND hwnd) {
+    static TCHAR * szColorLabel[] = { TEXT ("Red"), TEXT ("Green"), TEXT ("Blue") } ;
     HINSTANCE hInstance = GetModuleHandle(NULL);
     hListBox = CreateWindowExW(WS_EX_CLIENTEDGE
             , L"LISTBOX", NULL
-            , WS_CHILD | WS_VISIBLE | LBS_NOTIFY
-            , 7, 35, 200, 300
+            , WS_CHILD | WS_VISIBLE | LBS_NOTIFY | WS_VSCROLL
+            , 7, 35, 200, 200
             , hwnd, NULL, hInstance, NULL);
 
     hnewItem = CreateWindow(
@@ -155,4 +196,34 @@ void createWindows(HWND hwnd) {
             (HMENU)ID_CLEAR_BUTTON,
             GetModuleHandle(NULL),
             NULL);
+
+    for (int i = 0; i < 3; i++) {
+        hScrollBars[i] = CreateWindow (
+                TEXT ("scrollbar"), NULL,
+                WS_CHILD | WS_VISIBLE | SBS_HORZ | SBS_BOTTOMALIGN,
+                5, 250 + i*60, 150, 10, hwnd,
+                (HMENU) i,
+                hInstance,
+                NULL) ;
+
+        SetScrollRange (hScrollBars[i], SB_CTL, 0, 255, FALSE) ;
+        SetScrollPos (hScrollBars[i], SB_CTL, 0, FALSE) ;
+
+        hLabel [i] = CreateWindow (
+                TEXT ("static"), szColorLabel[i],
+                WS_CHILD | WS_VISIBLE | SS_CENTER,
+                155, 242 + i*60, 50, 20,
+                hwnd, (HMENU) (i + 3),
+                hInstance, NULL);
+
+        hValue [i] = CreateWindow (
+                TEXT ("static"), TEXT ("0"),
+                WS_CHILD | WS_VISIBLE | SS_CENTER,
+                80, 262 + i*60, 40, 20,
+                hwnd, (HMENU) (i + 6),
+                hInstance, NULL) ;
+        hBrush[i] = CreateSolidBrush (crPrim[i]) ;
+
+    }
+    hBrushStatic = CreateSolidBrush (GetSysColor (COLOR_BTNHIGHLIGHT)) ;
 }

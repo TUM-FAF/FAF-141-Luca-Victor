@@ -4,11 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "electron ." 
+    "start": "electron .",
+    "build": "electron-packager . calculator --platform=linux --arch=x64 --ignore=node_modules/electron-*"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "electron-packager": "^6.0.0",
     "electron-prebuilt": "^0.37.2"
+  },
+  "dependencies": {
+    "electron-packager": "^6.0.0",
+    "jquery": "^2.2.2",
+    "underscore": "^1.8.3"
   }
 }

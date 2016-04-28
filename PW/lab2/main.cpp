@@ -29,7 +29,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine
     wndclass.hInstance = hInstance ;
     wndclass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE(IDE_TARGET));
     wndclass.hCursor = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_TARGET));
-    wndclass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH) ;
+    wndclass.hbrBackground = CreateSolidBrush (RGB(0, 0, 0)) ;
     wndclass.lpszMenuName = NULL ;
     wndclass.lpszClassName = szAppName ;
 
@@ -38,17 +38,18 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine
         return 0 ;
     }
 
-    hwnd = CreateWindow (szAppName, // window class name
-                         TEXT ("Lab 2 "), // window caption
-                         WS_OVERLAPPEDWINDOW, // window style
-                         CW_USEDEFAULT, // initial x position
-                         CW_USEDEFAULT, // initial y position
-                         CW_USEDEFAULT, // initial x size
-                         CW_USEDEFAULT, // initial y size
-                         NULL, // parent window handle
-                         NULL, // window menu handle
-                         hInstance, // program instance handle
-                         NULL) ; // creation parameters
+    hwnd = CreateWindow (
+            szAppName, // window class name
+             TEXT ("Lab 2 "), // window caption
+             WS_OVERLAPPEDWINDOW, // window style
+             CW_USEDEFAULT, // initial x position
+             CW_USEDEFAULT, // initial y position
+             CW_USEDEFAULT, // initial x size
+             CW_USEDEFAULT, // initial y size
+             NULL, // parent window handle
+             NULL, // window menu handle
+             hInstance, // program instance handle
+             NULL) ; // creation parameters
     ShowWindow (hwnd, iCmdShow) ;
     UpdateWindow (hwnd) ;
     while (GetMessage (&msg, NULL, 0, 0)) {
@@ -103,11 +104,13 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         case WM_HSCROLL:
             iCurrentIdBar = GetWindowLong ((HWND) lParam, GWL_ID) ;
             switch (LOWORD (wParam)) {
-                case SB_LINEUP:
-                    color[iCurrentIdBar] -= 5;
+                case SB_LINELEFT:
+                    if (color[iCurrentIdBar] > 5)
+                        color[iCurrentIdBar] -= 5;
                     break;
-                case SB_LINEDOWN:
-                    color[iCurrentIdBar] += 5;
+                case SB_LINERIGHT:
+                    if (color[iCurrentIdBar] < 250)
+                        color[iCurrentIdBar] += 5;
                     break;
                 case SB_THUMBTRACK :
                     color[iCurrentIdBar] = HIWORD (wParam) ;
@@ -116,19 +119,12 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                     break ;
             }
             SetScrollPos (hScrollBars[iCurrentIdBar], SB_CTL, color[iCurrentIdBar], TRUE) ;
-//            si.cbSize = sizeof (SCROLLINFO) ;
-//            si.nMin = 0;
-//            si.nMax = 255;
-//            SetScrollRange (hwnd, SB_HORZ, si.nMin, si.nMax, false) ;
-//            SetScrollPos (hwnd, SB_HORZ, wParam, true) ;
-            int iLength ;
+            hBrushStatic = CreateSolidBrush(RGB(color[0], color[1], color[2]));
             TCHAR szBuffer [40] ;
             hdc = GetDC(hwnd);
-            iLength = wsprintf (szBuffer, TEXT ("%i"), color[iCurrentIdBar]) ;
-            TextOut (hdc, 300, 200, szBuffer, iLength) ;
+            wsprintf (szBuffer, TEXT ("%i"), color[iCurrentIdBar]) ;
             SetWindowText (hValue[iCurrentIdBar], szBuffer) ;
-//            DeleteObject ((HBRUSH) SetClassLong (hwnd, GCL_HBRBACKGROUND, (LONG)
-//                    CreateSolidBrush (RGB (color[0], color[1], color[2])))) ;
+            DeleteObject((HBRUSH)SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR) hBrushStatic));
             InvalidateRect (hwnd, &rect, TRUE) ;
             ReleaseDC(hwnd, hdc);
             break;
@@ -136,16 +132,20 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             iCurrentIdBar = GetWindowLong ((HWND) lParam, GWL_ID) ;
             switch(wParam) {
                 case VK_UP :
-                    SendMessage(hScrollBars[iCurrentIdBar], WM_HSCROLL, SB_LINEUP, 0);
+                    SendMessage(hScrollBars[iCurrentIdBar], WM_HSCROLL, SB_LINELEFT, 0);
                 break;
                 case VK_DOWN :
-                    SendMessage(hScrollBars[iCurrentIdBar], WM_HSCROLL, SB_LINEDOWN, 0);
+                    SendMessage(hScrollBars[iCurrentIdBar], WM_HSCROLL, SB_LINERIGHT, 0);
                 break;
             }
             return 0;
+        case WM_ERASEBKGND:
 
+            break;
         case WM_PAINT:
             hdc = BeginPaint (hwnd, &ps) ;
+            GetClientRect(hwnd, &rect);
+
             EndPaint (hwnd, &ps) ;
             return 0 ;
         case WM_SETCURSOR:
@@ -156,6 +156,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
             break;
         case WM_DESTROY:
+            DeleteObject (hBrushStatic) ;
             PostQuitMessage (0) ;
             return 0 ;
     }

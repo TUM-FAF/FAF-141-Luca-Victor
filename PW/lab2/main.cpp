@@ -59,18 +59,17 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine
     return msg.wParam ;
 }
 LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
-    static HMENU hMenu ;
     HDC hdc ;
     PAINTSTRUCT ps ;
+    static HMENU hMenu ;
     RECT rect ;
     UINT iTextLength;
     char* szText;
     POINT pt;
-    int index, iCurrentIdBar;
+    int index, i;
     HINSTANCE hInstance;
     static int color[3];
-
-
+    
     switch (message) {
         case WM_CREATE:
             hMenu = LoadMenu (hInstance, szAppName) ;
@@ -97,42 +96,51 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                 case ID_CLEAR_BUTTON:
                     SendMessage(hListBox, LB_RESETCONTENT, 0, 0);
                     break;
+                case IDM_ABOUT:
+                    MessageBox(hwnd, TEXT("This is the coolest and best app in the world!"), MB_OK, MB_ICONEXCLAMATION) ;
+                    break;
+                case IDM_GREETING:
+                    MessageBox(hwnd, TEXT("Hello World! :)"), MB_OK, MB_ICONEXCLAMATION) ;
+                    break;
+                case IDM_EXIT:
+                    PostQuitMessage (0) ;
+                    break;
             }
         case WM_HSCROLL:
-            iCurrentIdBar = GetWindowLong ((HWND) lParam, GWL_ID) ;
+            i = GetWindowLong ((HWND) lParam, GWL_ID) ;
             switch (LOWORD (wParam)) {
                 case SB_LINELEFT:
-                    if (color[iCurrentIdBar] > 5)
-                        color[iCurrentIdBar] -= 5;
+                    if (color[i] > 5)
+                        color[i] -= 5;
                     break;
                 case SB_LINERIGHT:
-                    if (color[iCurrentIdBar] < 250)
-                        color[iCurrentIdBar] += 5;
+                    if (color[i] < 250)
+                        color[i] += 5;
                     break;
                 case SB_THUMBTRACK :
-                    color[iCurrentIdBar] = HIWORD (wParam) ;
+                    color[i] = HIWORD (wParam) ;
                     break ;
                 default :
                     break ;
             }
-            SetScrollPos (hScrollBars[iCurrentIdBar], SB_CTL, color[iCurrentIdBar], TRUE) ;
+            SetScrollPos (hScrollBars[i], SB_CTL, color[i], TRUE) ;
             hBrushStatic = CreateSolidBrush(RGB(color[0], color[1], color[2]));
             TCHAR szBuffer [40] ;
             hdc = GetDC(hwnd);
-            wsprintf (szBuffer, TEXT ("%i"), color[iCurrentIdBar]) ;
-            SetWindowText (hValue[iCurrentIdBar], szBuffer) ;
+            wsprintf (szBuffer, TEXT ("%i"), color[i]) ;
+            SetWindowText (hValue[i], szBuffer) ;
             DeleteObject((HBRUSH)SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR) hBrushStatic));
             InvalidateRect (hwnd, &rect, TRUE) ;
             ReleaseDC(hwnd, hdc);
             break;
         case WM_KEYDOWN:
-            iCurrentIdBar = GetWindowLong ((HWND) lParam, GWL_ID) ;
+            i = GetWindowLong ((HWND) lParam, GWL_ID) ;
             switch(wParam) {
                 case VK_UP :
-                    SendMessage(hScrollBars[iCurrentIdBar], WM_HSCROLL, SB_LINELEFT, 0);
+                    SendMessage(hScrollBars[i], WM_HSCROLL, SB_LINELEFT, 0);
                 break;
                 case VK_DOWN :
-                    SendMessage(hScrollBars[iCurrentIdBar], WM_HSCROLL, SB_LINERIGHT, 0);
+                    SendMessage(hScrollBars[i], WM_HSCROLL, SB_LINERIGHT, 0);
                 break;
             }
             return 0;

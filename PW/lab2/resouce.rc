@@ -1,4 +1,0 @@
-#include "Resource.h"
-
-IDC_TARGET CURSOR "images/cursor2.cur"
-IDE_TARGET ICON "images/icon1.ico"

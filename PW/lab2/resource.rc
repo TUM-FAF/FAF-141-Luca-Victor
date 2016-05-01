@@ -1,0 +1,16 @@
+#include "resource.h"
+
+IDC_TARGET CURSOR "images/cursor2.cur"
+IDE_TARGET ICON "images/icon1.ico"
+
+// MY MENU
+
+IDC_APPMENU MENU
+BEGIN
+    POPUP "&Menu"
+    BEGIN
+        MENUITEM "About",        IDM_ABOUT
+        MENUITEM "Greeting",     IDM_GREETING
+        MENUITEM "Exit",         IDM_EXIT
+    END
+END

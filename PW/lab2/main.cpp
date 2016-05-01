@@ -14,9 +14,9 @@ static HBRUSH hBrush[3], hBrushStatic ;
 LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM) ;
 
 void createWindows(HWND);
+static TCHAR szAppName[] = TEXT ("HelloWin") ;
 
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow) {
-    static TCHAR szAppName[] = TEXT ("HelloWin") ;
     HWND hwnd ;
     MSG msg ;
     WNDCLASS wndclass ;
@@ -30,7 +30,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine
     wndclass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE(IDE_TARGET));
     wndclass.hCursor = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_TARGET));
     wndclass.hbrBackground = CreateSolidBrush (RGB(0, 0, 0)) ;
-    wndclass.lpszMenuName = NULL ;
+    wndclass.lpszMenuName = MAKEINTRESOURCE(IDC_APPMENU) ;
     wndclass.lpszClassName = szAppName ;
 
     if (!RegisterClass (&wndclass)) {
@@ -59,6 +59,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine
     return msg.wParam ;
 }
 LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+    static HMENU hMenu ;
     HDC hdc ;
     PAINTSTRUCT ps ;
     RECT rect ;
@@ -67,17 +68,13 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     POINT pt;
     int index, iCurrentIdBar;
     HINSTANCE hInstance;
-    TCHAR szBuffer[10];
     static int color[3];
-    SCROLLINFO si ;
 
 
     switch (message) {
         case WM_CREATE:
-            hmenu = CreateMenu();
-            AppendMenu(hmenu, MF_STRING, ID_ABOUT, "About");
-            AppendMenu(hmenu, MF_STRING, ID_EXIT, "Exit");
-            SetMenu(hwnd, hmenu);
+            hMenu = LoadMenu (hInstance, szAppName) ;
+            hMenu = GetSubMenu (hMenu, 0) ;
             createWindows(hwnd);
             break;
         case WM_COMMAND:
@@ -139,9 +136,6 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             }
             return 0;
-        case WM_ERASEBKGND:
-
-            break;
         case WM_PAINT:
             hdc = BeginPaint (hwnd, &ps) ;
             GetClientRect(hwnd, &rect);
@@ -164,7 +158,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 void createWindows(HWND hwnd) {
-    static TCHAR * szColorLabel[] = { TEXT ("Red"), TEXT ("Green"), TEXT ("Blue") } ;
+    static TCHAR * szColorLabel[] = {(TCHAR *)("Red"), (TCHAR *)("Green"), (TCHAR *)("Blue")} ;
     HINSTANCE hInstance = GetModuleHandle(NULL);
     hListBox = CreateWindowExW(WS_EX_CLIENTEDGE
             , L"LISTBOX", NULL

@@ -10,7 +10,27 @@ BEGIN
     POPUP "&Menu"
     BEGIN
         MENUITEM "About",        IDM_ABOUT
-        MENUITEM "Greeting",     IDM_GREETING
+        MENUITEM "Resize",       IDM_RESIZE
         MENUITEM "Exit",         IDM_EXIT
     END
+END
+
+//POPUP MENU
+
+IDR_POPUPMENU MENU
+BEGIN
+   POPUP "ContextMenu"
+      BEGIN
+         MENUITEM "Rename",                IDM_RENAME
+         MENUITEM "Delete",                IDM_DELETE
+      END
+END
+
+// RENAME DIALOG BOX
+
+
+IDR_ABOUTBOX DIALOG  100, 10, 100, 50
+BEGIN
+    EDITTEXT ID_EDIT, 10, 10, 80, 14
+    PUSHBUTTON "&Rename", ID_DIALOG_RENAME, 50, 30, 40, 14
 END

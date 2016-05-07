@@ -4,12 +4,14 @@
 #include "registerClass.h"
 
 
-HWND hListBox, hAddButton, hRemoveButton, hClearButton, hNewItem, hRenameItem;
-HMENU hPopUpMenu;
-static HWND hScrollBars[3], hLabel[3], hValue[3];
+HWND hListBox, hAddButton, hRemoveButton, hClearButton, hNewItem ;
+HMENU hPopUpMenu ;
+static HWND hScrollBars[3], hLabel[3], hValue[3] ;
 static COLORREF crPrim[3] = { RGB (255, 0, 0), RGB (0, 255, 0), RGB (0, 0, 255) } ;
-static HBRUSH hBrush[3], hBrushStatic ;
+static HBRUSH hBrushStatic ;
 
+int mainWindowWidth = 800;
+int mainWindowHeight = 600;
 
 LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM) ;
 
@@ -17,7 +19,6 @@ BOOL CALLBACK RenameDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 void createWindows(HWND);
 void SetRandomColor(HWND, int*, RECT);
-static TCHAR szRenameWindow[] = TEXT("Rename");
 
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow) {
     HWND hwnd ;
@@ -30,8 +31,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine
              WS_OVERLAPPEDWINDOW, // window style
              CW_USEDEFAULT, // initial x position
              CW_USEDEFAULT, // initial y position
-             CW_USEDEFAULT, // initial x size
-             CW_USEDEFAULT, // initial y size
+             mainWindowWidth, // initial x size
+             mainWindowHeight, // initial y size
              NULL, // parent window handle
              NULL, // window menu handle
              hInstance, // program instance handle
@@ -56,7 +57,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     UINT iTextLength;
     char* szText;
     static POINT pt;
-    int index, i = 0;
+    int index, i;
     HINSTANCE hInstance = nullptr;
     static int color[3];
 
@@ -138,7 +139,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
             SetScrollPos (hScrollBars[i], SB_CTL, color[i], TRUE) ;
             hBrushStatic = CreateSolidBrush(RGB(color[0], color[1], color[2]));
-            TCHAR szBuffer [40] ;
+            TCHAR szBuffer [20] ;
             wsprintf (szBuffer, TEXT ("%i"), color[i]) ;
             SetWindowText (hValue[i], szBuffer) ;
             DeleteObject((HBRUSH)SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR) hBrushStatic));
@@ -262,16 +263,6 @@ void createWindows(HWND hwnd) {
             GetModuleHandle(NULL),
             NULL);
 
-    CreateWindow(
-            TEXT("SCROLLBasc"),
-            (LPCTSTR) NULL,
-            WS_CHILD | WS_BORDER| WS_VISIBLE,
-            100, 100, 400, 400,
-            hwnd,
-            (HMENU)(ID_CHILD_WINDOW),
-            hInstance,
-            NULL);
-
     for (int i = 0; i < 3; i++) {
         hScrollBars[i] = CreateWindow (
                 TEXT ("scrollbar"), NULL,
@@ -297,8 +288,6 @@ void createWindows(HWND hwnd) {
                 80, 262 + i*60, 40, 20,
                 hwnd, (HMENU) (i + 6),
                 hInstance, NULL) ;
-        hBrush[i] = CreateSolidBrush (crPrim[i]) ;
-
     }
 }
 

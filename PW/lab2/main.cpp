@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <w32api/windowsx.h>
 #include "resource.h"
+#include "registerClass.h"
 
 
 HWND hListBox, hAddButton, hRemoveButton, hClearButton, hNewItem, hRenameItem;
@@ -16,31 +17,13 @@ BOOL CALLBACK RenameDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 
 void createWindows(HWND);
 void SetRandomColor(HWND, int*, RECT);
-static TCHAR szAppName[] = TEXT ("HelloWin") ;
 static TCHAR szRenameWindow[] = TEXT("Rename");
 
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow) {
     HWND hwnd ;
     MSG msg ;
-    WNDCLASS wndclass ;
 
-
-    wndclass.style = CS_HREDRAW | CS_VREDRAW ;
-    wndclass.lpfnWndProc = WndProc ;
-    wndclass.cbClsExtra = 0 ;
-    wndclass.cbWndExtra = 0 ;
-    wndclass.hInstance = hInstance ;
-    wndclass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE(IDE_TARGET));
-    wndclass.hCursor = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_TARGET));
-    wndclass.hbrBackground = CreateSolidBrush (RGB(0, 0, 0)) ;
-    wndclass.lpszMenuName = MAKEINTRESOURCE(IDC_APPMENU) ;
-    wndclass.lpszClassName = szAppName ;
-
-    if (!RegisterClass (&wndclass)) {
-        MessageBox (NULL, TEXT ("This program requires Windows NT!"), szAppName, MB_ICONERROR) ;
-        return 0 ;
-    }
-
+    RegisterClass(hInstance, WndProc);
     hwnd = CreateWindow (
             szAppName, // window class name
              TEXT ("Lab 2 "), // window caption
@@ -170,10 +153,6 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                 case VK_DOWN :
                     SendMessage(hScrollBars[i], WM_HSCROLL, SB_LINERIGHT, 0);
                     break;
-                case VK_RETURN:
-                    MessageBox(hwnd, TEXT("This is the coolest and best app in the world!"), MB_OK, MB_ICONEXCLAMATION) ;
-//                    SetFocus(hNewItem);
-                    break;
             }
             return 0;
         case WM_HOTKEY:
@@ -253,6 +232,8 @@ void createWindows(HWND hwnd) {
             (HMENU)ID_NEW_ITEM,
             GetModuleHandle(NULL),
             NULL);
+
+    SetFocus(hNewItem);
 
     hAddButton = CreateWindow(
             TEXT("Button"),

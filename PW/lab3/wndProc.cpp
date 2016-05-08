@@ -15,6 +15,9 @@ LRESULT CALLBACK WndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             DrawText (hdc, TEXT ("Hello World!"), -1, &rc, DT_SINGLELINE | DT_CENTER | DT_VCENTER) ;
             EndPaint(hWnd, &ps);
             break;
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            break;
     }
     return DefWindowProc (hWnd, message, wParam, lParam) ;
 }

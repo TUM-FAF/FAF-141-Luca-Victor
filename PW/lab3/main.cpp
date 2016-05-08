@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <w32api/windowsx.h>
+#include "resource.h"
 
 
 static TCHAR szAppName[] = TEXT ("Lab3") ;
@@ -43,10 +44,10 @@ void RegisterClass(HINSTANCE hInstance, WNDPROC WndProc) {
     wndClass.cbClsExtra = 0 ;
     wndClass.cbWndExtra = 0 ;
     wndClass.hInstance = hInstance ;
-    wndClass.hIcon = NULL ;
-    wndClass.hCursor = NULL ;
+    wndClass.hIcon = LoadIcon (hInstance, MAKEINTRESOURCE(ID_ICON)) ;
+    wndClass.hCursor = LoadCursor(hInstance, MAKEINTRESOURCE(ID_ARROW));
     wndClass.hbrBackground = WHITE_BRUSH ;
-    wndClass.lpszMenuName =NULL ;
+    wndClass.lpszMenuName = MAKEINTRESOURCE(IDC_LAB3_MENU) ; ;
     wndClass.lpszClassName = szAppName ;
 
     if (!RegisterClass (&wndClass)) {

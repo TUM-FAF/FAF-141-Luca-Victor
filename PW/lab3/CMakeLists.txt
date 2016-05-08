@@ -3,5 +3,5 @@ project(lab3)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(SOURCE_FILES main.cpp wndProc.cpp)
+set(SOURCE_FILES main.cpp wndProc.cpp resource.h resource.rc)
 add_executable(lab3 ${SOURCE_FILES})

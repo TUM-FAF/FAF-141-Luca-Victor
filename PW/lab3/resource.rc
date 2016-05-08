@@ -1,0 +1,37 @@
+#include "resource.h"
+
+/////////////////////////////////////////////////////////
+//Icon
+////////////////////////////////////////////////////////
+
+ID_ICON     ICON    "Lab3Icon.ico"
+
+
+
+////////////////////////////////////////////////////////////
+// MENU
+//////////////////////////////////////////////////////////
+
+IDC_LAB3_MENU MENU
+BEGIN
+    POPUP   "&File"
+    BEGIN
+        MENUITEM "About (CTRL+A)",               IDM_ABOUT
+        MENUITEM "Exit (CTRL+X)",                IDM_EXIT
+    END
+    POPUP "&Draw"
+    BEGIN
+        MENUITEM "&Line (CTRL+L)",               ID_DRAW_LINE
+        MENUITEM "&Square (CTRL+S)",             ID_DRAW_SQUARE
+        MENUITEM "&Rectangle (CTRL+R)",          ID_DRAW_RECTANGLE
+        MENUITEM "&Circle (CTRL+C)",             ID_DRAW_CIRCLE
+        MENUITEM "&Bezier (CTRL+B)",             ID_DRAW_BEZIER
+        MENUITEM "&Free draw (CTRL+F)",          ID_DRAW_FREE
+    END
+    POPUP "&Action"
+    BEGIN
+        MENUITEM "&Increase Weight (CTRL+I)",    ID_INCREASE_WEIGHT
+        MENUITEM "&Decrese Weight (CTRL+D)",     ID_DECREASE_WEIGHT
+        MENUITEM "&Change Color (CTRL+O)",       ID_CHANGE_COLOR
+    END
+END

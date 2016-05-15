@@ -30,4 +30,10 @@
 #define ID_DECREASE_WEIGHT          2002
 
 
+//hotkeys action
+
+#define IDHK_EXIT                   3001
+#define IDHK_ABOUT                  3002
+
+
 #endif //LAB3_RESOURCE_H_H

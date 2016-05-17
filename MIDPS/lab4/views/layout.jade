@@ -1,7 +1,13 @@
 doctype html
-html
+html(ng-app="CoolApp")
   head
     title= title
+    script(type="text/javascript" src='/jquery/dist/jquery.js')
+    script(type="text/javascript" src='/angular/angular.js')
+    script(type="text/javascript" src='/bootstrap/dist/js/bootstrap.js')
+    link(rel="stylesheet" href='/bootstrap/dist/css/bootstrap.css')
+    script(type="text/javascript" src='/javascripts/controllers/appController.js')
     link(rel='stylesheet', href='/stylesheets/style.css')
+    
   body
     block content

@@ -3,6 +3,10 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-a {
-  color: #00B7FF;
+.container .list {
+  display: table;
+  border: 1px solid #eee;
+}
+.heading {
+  margin-bottom: 50px;
 }

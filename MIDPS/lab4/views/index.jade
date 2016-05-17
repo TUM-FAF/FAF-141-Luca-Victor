@@ -1,5 +1,33 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h1.heading Preferences table
+  .container(ng-controller='mainController')
+    table.table.table-striped.list
+      tr
+        td
+          strong Nr
+        td 
+          strong Name
+        td
+          strong Fruct
+        td
+          strong Action
+      tr
+        td 1
+        td Alex
+        td Portocale
+        td
+          button.btn.btn-danger Delete
+      tr
+        td 2
+        td Oxana
+        td Mere
+        td
+          button.btn.btn-danger Delete
+      tr
+        td 3
+        td Nicu
+        td Ananas
+        td
+          button.btn.btn-danger Delete

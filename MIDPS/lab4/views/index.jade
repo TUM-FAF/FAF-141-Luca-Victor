@@ -1,0 +1,26 @@
+extends layout
+
+block content
+  h1.heading Preference table
+  .container(ng-controller='mainController')
+    table.table.table-striped.list
+      .table-heading.text-center  
+        h3 New user preference
+      tr
+        td
+          strong Name
+        td
+          strong Food
+        td
+      tr
+        td
+          input(type="text", ng-model='preference.name', name='name')
+        td
+          input(type="text", ng-model='preference.food', name='food')
+        td
+          button.btn.btn-primary(ng-click='addPreference()') Add
+      tr(ng-repeat="preference in preferences")
+        td {{preference.name}}
+        td {{preference.food}}
+        td
+          button.btn.btn-danger(ng-click="removePreference()") Delete

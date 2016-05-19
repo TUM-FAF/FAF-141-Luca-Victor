@@ -1,5 +1,7 @@
 ## MEAN stack simple App
 
+![Alt](meanStack.jpg)
+
 ### Text Editor
 
 In this web development project I discovered Atom - an awesome, beautiful, simple and comfortable text editor.
@@ -7,6 +9,10 @@ In this web development project I discovered Atom - an awesome, beautiful, simpl
 ### About application
 
 My application is running on Node.js server connected via mongoose to MongoDB database. On the client side application has angular with a bit of bootstrap for styling. Application has a very basic features: Add preference and remove preference which are displayed in a pretty table form.
+
+### Overall view in the browser
+
+![Alt](appScreeshot.png)
 
 ### Conclusion
 

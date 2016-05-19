@@ -8,23 +8,33 @@ myApp.controller('mainController', ['$scope', '$http', function($scope, $http) {
     },
     url: '/preferences'
   }).then(function successCallback(response) {
-    // this callback will be called asynchronously
-    // when the response is available
     console.log("+++++++++++++++++++++")
     console.log(response);
     $scope.preferences = response.data;
   }, function errorCallback(response) {
     console.log("something is wrong");
-    // called asynchronously if an error occurs
-    // or server returns response with an error status.
   });
 
   $scope.addPreference = function() {
-    if ($scope.preference.name != undefined && $scope.preference.fruct != undefined) {
+    if ($scope.preference.name != undefined && $scope.preference.food != undefined) {
       var new_preference = $scope.preference;
-      $http.post('/preferences', new_preference);
+      $http({
+        method: 'POST',
+        url: '/preferences',
+        headers: {
+          'Accept': 'application/json'
+        },
+        data: new_preference
+      }).then(function successCallback(response) {
+        $scope.preferences.unshift(new_preference);
+        console.log(response.data);
+      }, function errorCallback(response) {
+        console.log("something is wrong while posting");
+      });
       console.log(new_preference);
     }
     $scope.preference = '';
   }
+
+  
 }]);

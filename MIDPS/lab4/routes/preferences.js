@@ -20,7 +20,18 @@ router.post('/preferences', function(req, res, next) {
       return res.status(500).send("Fail to add preference");
     }
     console.log(preference);
-    res.json({success: true});
+    res.json({success: true, preference: preference});
+  });
+});
+
+router.delete('/preferences/:id', function(req, res, next) {
+  console.log("+++++++++++++++ DELETE REQUEST /preferences");
+  console.log(req.body);
+  Preferences.remove({_id: req.params.id}, function(error, preference) {
+    if(error) {
+      return res.status(500).send("Error finding preference by id");
+    }
+    res.send({succes: true});
   });
 });
 

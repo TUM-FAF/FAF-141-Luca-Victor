@@ -30,9 +30,8 @@ myApp.controller('mainController', ['$scope', '$http', function($scope, $http) {
         $scope.preferences.unshift(response.data.preference);
         console.log(response.data);
       }, function errorCallback(response) {
-        console.log("something is wrong while posting");
+        console.log("something went wrong while posting");
       });
-      console.log(new_preference);
     }
     $scope.preference = '';
   }
@@ -49,9 +48,8 @@ myApp.controller('mainController', ['$scope', '$http', function($scope, $http) {
       $scope.preferences = $scope.preferences.filter(function(item){
         return item._id != preference._id;
       })
-      console.log(response.data);
     }, function errorCallback(response) {
-      console.log("something is wrong while posting");
+      console.log("something went wrong while posting");
     });
   }
 }]);

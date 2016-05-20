@@ -1,14 +1,14 @@
 //
-// Created by Vitiok on 5/8/2016.
+// Created by Vitiok on 5/20/2016.
 //
 
-#ifndef LAB3_DRAWING_H
-#define LAB3_DRAWING_H
+#ifndef LAB3_RECTANGLE_H
+#define LAB3_RECTANGLE_H
 
 #include <windows.h>
 
-class Line {
-protected:
+class RectangleClass {
+private:
     POINT start;
     POINT end;
     int penWidth;
@@ -16,7 +16,7 @@ protected:
     BOOL isDrawing;
     COLORREF penColor;
 public:
-    Line();
+    RectangleClass();
 
     void setStart(POINT start);
     POINT getStart();
@@ -33,14 +33,16 @@ public:
     COLORREF getPenColor() const ;
     void setPenColor(COLORREF penColor) ;
 
+    void setPen(HDC hdc);
     HPEN getPen() const;
+
     void Draw(HDC hdc);
 
     void setIsDrawing(BOOL isDrawing);
     BOOL getIsDrawing();
 
-    void modifyWeight(BOOL increase);
+    void modifyWidth(BOOL increase);
 };
 
 
-#endif //LAB3_DRAWING_H
+#endif //LAB3_RECTANGLE_H

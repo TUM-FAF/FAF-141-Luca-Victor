@@ -1,15 +1,11 @@
 #include <windows.h>
-#include <w32api/windowsx.h>
 #include "resource.h"
-#include "Line.h"
 
 static TCHAR szAppName[] = TEXT ("Lab3") ;
 WNDCLASS wndClass ;
 
 LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM) ;
 void RegisterClass(HINSTANCE hInstance, WNDPROC WndProc);
-
-
 
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow) {
     HWND hwnd ;

@@ -3,9 +3,25 @@
 //
 #include <windows.h>
 #include "resource.h"
-#include "Line.h"
-void setCurrentDrawing(Line *) ;
-Line *currentLine = new Line();
+#include "LineClass.h"
+#include "RectangleClass.h"
+
+#define COLORS_NR 3
+
+COLORREF colors[COLORS_NR] = {
+        RGB(12, 200, 43),
+        RGB(43,87,200),
+        RGB(200, 98, 12)
+} ;
+
+LineClass *currentLine = new LineClass();
+RectangleClass *currentRectangle = new RectangleClass();
+
+void setCurrentDrawing(LineClass *) ;
+void setCurrentRectangle(RectangleClass *) ;
+
+
+int color = 0;
 
 LRESULT CALLBACK WndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     HDC hdc;
@@ -13,7 +29,7 @@ LRESULT CALLBACK WndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     POINT currentPosition;
     RECT rc;
     HPEN hNewPen;
-    int weight;
+
 
     switch(message) {
         case WM_CREATE:
@@ -30,18 +46,33 @@ LRESULT CALLBACK WndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 case ID_DRAW_LINE:
                     hdc = GetDC(hWnd) ;
                     GetClientRect(hWnd, &rc) ;
-                    Line *newLine;
-                    newLine = new Line();
+                    LineClass *newLine;
+                    newLine = new LineClass();
                     newLine->setIsDrawing(TRUE);
                     setCurrentDrawing(newLine);
                     InvalidateRect(hWnd, &rc, TRUE);
                     ReleaseDC(hWnd, hdc);
                     break;
+                case ID_DRAW_RECTANGLE:
+                    hdc = GetDC(hWnd) ;
+                    GetClientRect(hWnd, &rc) ;
+                    RectangleClass *newRectangle;
+                    newRectangle = new RectangleClass();
+                    newRectangle->setIsDrawing(TRUE);
+                    setCurrentRectangle(newRectangle);
+                    InvalidateRect(hWnd, &rc, TRUE);
+                    ReleaseDC(hWnd, hdc);
+                    break;
                 case ID_INCREASE_WEIGHT:
-                    currentLine->modifyWeight(TRUE);
+                    currentLine->modifyWidth(TRUE);
                     break;
                 case ID_DECREASE_WEIGHT:
-                    currentLine->modifyWeight(FALSE);
+                    currentLine->modifyWidth(FALSE);
+                    break;
+                case ID_CHANGE_COLOR:
+                    color = color + 1 % 3;
+                    currentLine->setPenColor((COLORREF) colors[color]);
+                    InvalidateRect(hWnd, &rc, TRUE);
                     break;
             }
             break;
@@ -54,6 +85,7 @@ LRESULT CALLBACK WndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 wsprintf (szBuffer1, TEXT ("x:%i y:%i"), currentPosition.x, currentPosition.y) ;
                 TextOut(hdc, 200, 200, szBuffer1, 10) ;
                 currentLine->setStart(currentPosition);
+                currentRectangle->setStart(currentPosition);
             }
             break;
         case WM_LBUTTONUP:
@@ -66,6 +98,8 @@ LRESULT CALLBACK WndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 TextOut(hdc, 200, 240, szBuffer2, 10) ;
                 currentLine->setEnd(currentPosition);
                 currentLine->Draw(hdc) ;
+                currentRectangle->setEnd(currentPosition);
+                currentRectangle->Draw(hdc) ;
                 InvalidateRect(hWnd, &rc, TRUE);
             }
             break;
@@ -86,6 +120,10 @@ LRESULT CALLBACK WndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return DefWindowProc (hWnd, message, wParam, lParam) ;
 }
 
-void setCurrentDrawing(Line *newLine) {
+void setCurrentDrawing(LineClass *newLine) {
     currentLine = newLine;
+}
+
+void setCurrentRectangle(RectangleClass *newRectangle) {
+    currentRectangle = newRectangle;
 }

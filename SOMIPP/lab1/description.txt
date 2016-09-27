@@ -1,0 +1,5 @@
+I've made a boot loader which displays "Hi my name is Vitiok".
+In order to do that I've written an assembler language script and compiled it into an image with .img extension. 
+There was created a virtual machine and added a Floppy Controller using image previously created.
+After selecting image and booting vm it displayed "Hi my name is Vitiok."
+It was awesome!
